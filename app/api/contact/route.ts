@@ -29,6 +29,10 @@ export async function POST(request: NextRequest) {
 
   const { name, email, message } = body as ContactPayload;
   const destination = process.env.CONTACT_EMAIL_TO ?? '14luisdias@gmail.com';
+  // Remetente configurável via ambiente. Padrão: domínio de teste do Resend
+  // (onboarding@resend.dev), que só envia para o e-mail dono da conta.
+  // Para usar um domínio próprio, verifique-o no Resend e defina CONTACT_EMAIL_FROM.
+  const sender = process.env.CONTACT_EMAIL_FROM?.trim() || 'Portfólio <onboarding@resend.dev>';
   const resendApiKey = process.env.RESEND_API_KEY;
 
   try {
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'Portfólio <onboarding@resend.dev>',
+          from: sender,
           to: destination,
           reply_to: email,
           subject: `Contato via portfólio — ${name}`,
