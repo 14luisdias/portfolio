@@ -15,7 +15,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
         className="mb-14"
       >
         <span className="font-mono text-xs text-teal uppercase tracking-widest">{'// projetos'}</span>
-        <h2 className="font-display text-3xl font-semibold mt-3">Sistemas implantados</h2>
+        <h2 className="font-display text-3xl font-semibold mt-3">Participação em Projetos de Sistemas </h2>
       </motion.div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
