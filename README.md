@@ -157,6 +157,8 @@ Para trocar a senha do admin: altere `ADMIN_PASSWORD` no `.env` e rode
 
 ## Produção (Neon + Vercel)
 
+> 📘 Guia detalhado, passo a passo e com troubleshooting: **[`docs/DEPLOY.md`](docs/DEPLOY.md)**.
+
 ### 1. Banco no Neon (Vercel Postgres)
 
 1. Crie um projeto no [Neon](https://neon.tech) (ou Vercel Postgres).
