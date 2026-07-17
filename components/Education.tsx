@@ -2,16 +2,22 @@
 
 import { motion } from 'framer-motion';
 import { GraduationCap, Award } from 'lucide-react';
+import type { Education as EducationModel, Course } from '@prisma/client';
 
-const courses = [
-  { name: 'Formação em Figma', org: 'Alura', year: '2023', hours: '47h' },
-  { name: 'SQL and Data Visualization (Metabase)', org: 'Udemy', year: '2021', hours: '5,5h' },
-  { name: 'Diagnósticos Geoespaciais Integrados', org: 'GIZ', year: '2020', hours: '16h' },
-  { name: 'Scriptcase Módulo I', org: 'NetMake', year: '2018', hours: '20h' },
-  { name: 'Programação em C#', org: 'Fundação Bradesco', year: '2017', hours: '117h' },
-];
+function formatEduPeriod(edu: EducationModel) {
+  if (edu.periodEnd && edu.periodEnd !== edu.periodStart) {
+    return `${edu.periodStart}–${edu.periodEnd}`;
+  }
+  return String(edu.periodStart);
+}
 
-export default function Education() {
+export default function Education({
+  education,
+  courses,
+}: {
+  education: EducationModel[];
+  courses: Course[];
+}) {
   return (
     <section id="formacao" className="max-w-6xl mx-auto px-6 py-24">
       <motion.div
@@ -21,7 +27,7 @@ export default function Education() {
         transition={{ duration: 0.6 }}
         className="mb-14"
       >
-        <span className="font-mono text-xs text-teal uppercase tracking-widest">// formação</span>
+        <span className="font-mono text-xs text-teal uppercase tracking-widest">{'// formação'}</span>
         <h2 className="font-display text-3xl font-semibold mt-3">Formação acadêmica & cursos</h2>
       </motion.div>
 
@@ -33,27 +39,37 @@ export default function Education() {
           transition={{ duration: 0.5 }}
           className="bg-surface border border-border rounded-lg p-6"
         >
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-6">
             <GraduationCap size={18} className="text-teal" />
             <h3 className="font-mono text-xs text-ink-faint uppercase tracking-wider">
-              Graduação
+              Formação acadêmica
             </h3>
           </div>
-          <h4 className="font-display text-lg text-ink mb-1">
-            Bacharelado em Sistemas de Informação
-          </h4>
-          <p className="text-sm text-ink-muted">UNINORTE — Rio Branco, Acre · 2013–2017</p>
 
-          <div className="mt-4 flex items-start gap-2 text-sm text-amber bg-amber/10 border border-amber/20 rounded-md p-3">
-            <Award size={16} className="shrink-0 mt-0.5" />
-            <span>
-              Certificado de Honra ao Mérito — 1º lugar da turma de Sistemas de Informação
-            </span>
+          <div className="space-y-6">
+            {education.map((edu) => (
+              <div key={edu.id} className="border-b border-border/60 pb-6 last:border-0 last:pb-0">
+                <div className="flex items-start justify-between gap-3">
+                  <h4 className="font-display text-lg text-ink">{edu.degree}</h4>
+                  {edu.inProgress && (
+                    <span className="shrink-0 font-mono text-[10px] px-1.5 py-0.5 rounded bg-teal/10 text-teal uppercase">
+                      em andamento
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-ink-muted mt-1">
+                  {edu.org} · {formatEduPeriod(edu)}
+                </p>
+
+                {edu.highlight && (
+                  <div className="mt-3 flex items-start gap-2 text-sm text-amber bg-amber/10 border border-amber/20 rounded-md p-3">
+                    <Award size={16} className="shrink-0 mt-0.5" />
+                    <span>{edu.highlight}</span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-
-          <p className="text-sm text-ink-muted mt-4 pt-4 border-t border-border">
-            Ensino Médio via ENEM · 2011
-          </p>
         </motion.div>
 
         <motion.div
@@ -69,7 +85,7 @@ export default function Education() {
           <ul className="space-y-3">
             {courses.map((c) => (
               <li
-                key={c.name}
+                key={c.id}
                 className="flex items-center justify-between text-sm border-b border-border/60 pb-3 last:border-0 last:pb-0"
               >
                 <div>
@@ -77,7 +93,8 @@ export default function Education() {
                   <p className="text-ink-faint text-xs font-mono">{c.org}</p>
                 </div>
                 <div className="text-right font-mono text-xs text-ink-faint whitespace-nowrap ml-4">
-                  {c.year} · {c.hours}
+                  {c.year}
+                  {c.hours ? ` · ${c.hours}` : ''}
                 </div>
               </li>
             ))}

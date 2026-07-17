@@ -1,156 +1,201 @@
 # Portfólio — Luis Antonio Sanches Dias
 
-Site de portfólio pessoal construído em **Next.js 14 (App Router)** + **TypeScript** +
-**Tailwind CSS**, com tema dark mode inspirado em painéis de monitoramento de sistemas —
-refletindo a atuação do Luis como Analista de Sistemas e Desenvolvedor Full Stack.
+Portfólio pessoal full stack em **Next.js 14 (App Router) + TypeScript + Tailwind CSS**,
+com painel administrativo protegido e conteúdo servido a partir de um banco
+**PostgreSQL** via **Prisma**. Dark mode (paleta teal/âmbar, fontes Space Grotesk /
+Inter / JetBrains Mono, estética de "painel de sistema").
 
 ## Stack
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Framer Motion (animações)
-- Lucide React (ícones)
+- **Next.js 14** (App Router) + **React 18** + **TypeScript**
+- **Tailwind CSS** + **framer-motion** + **lucide-react**
+- **Prisma** (ORM) + **PostgreSQL** (local em dev, Neon em produção)
+- **NextAuth (Auth.js) v5** — login do admin por credenciais (e-mail + senha), sessão JWT
+- **bcryptjs** — hash de senha
+- **Vercel Blob** — upload de imagens (dev e produção)
+- **zod** — validação nas rotas de API
+- **Resend** — envio do formulário de contato (opcional)
 
-## Rodando localmente (sem Docker)
+## Estrutura
 
-Pré-requisitos: Node.js 18+ e npm.
+```
+app/
+  page.tsx                 # site público (Server Component; lê do banco)
+  admin/                   # painel protegido (login + CRUD por entidade)
+  api/                     # rotas REST (GET público; escrita protegida) + upload + contato
+components/                # seções do site + componentes do admin
+lib/                       # prisma, auth helpers, schemas zod, config do admin, leitura de dados
+prisma/
+  schema.prisma            # modelos
+  seed.ts                  # popula o banco com os dados reais + admin
+```
+
+---
+
+## Desenvolvimento local
+
+### 1. Pré-requisitos
+
+- Node.js 20+
+- PostgreSQL rodando **na máquina host** (fora do Docker)
+
+### 2. Instalar dependências
 
 ```bash
 npm install
+```
+
+### 3. Configurar o banco local
+
+Crie um banco e um usuário no seu PostgreSQL, por exemplo:
+
+```sql
+CREATE ROLE portfolio WITH LOGIN PASSWORD 'sua_senha' CREATEDB;
+CREATE DATABASE portfolio_dev OWNER portfolio;
+```
+
+> O privilégio `CREATEDB` no role é necessário para o `prisma migrate dev`
+> criar o *shadow database* durante as migrações.
+
+### 4. Variáveis de ambiente
+
+Copie `.env.example` para `.env` e preencha:
+
+```bash
+cp .env.example .env
+```
+
+Gere o segredo do NextAuth:
+
+```bash
+openssl rand -base64 32   # cole em NEXTAUTH_SECRET
+```
+
+Veja a [tabela de variáveis](#variáveis-de-ambiente) abaixo.
+
+### 5. Migrations e seed
+
+```bash
+npm run db:migrate     # aplica as migrations (prisma migrate dev)
+npm run db:seed        # cria o admin e popula o conteúdo real
+```
+
+O admin é criado a partir de `ADMIN_EMAIL` / `ADMIN_PASSWORD` do `.env`.
+
+### 6. Rodar
+
+```bash
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000).
+- Site: <http://localhost:3000>
+- Painel: <http://localhost:3000/admin> (login em `/admin/login`)
 
-Para gerar a build de produção localmente:
+### Scripts úteis
 
-```bash
-npm run build
-npm run start
-```
+| Script               | O que faz                                     |
+| -------------------- | --------------------------------------------- |
+| `npm run dev`        | Servidor de desenvolvimento                   |
+| `npm run build`      | `prisma generate` + `next build`              |
+| `npm run start`      | Servidor de produção (após build)             |
+| `npm run lint`       | ESLint                                        |
+| `npm run db:migrate` | `prisma migrate dev`                          |
+| `npm run db:deploy`  | `prisma migrate deploy` (produção)            |
+| `npm run db:seed`    | Roda `prisma/seed.ts`                         |
+| `npm run db:studio`  | Abre o Prisma Studio                          |
 
-## Rodando com Docker
+---
 
-Pré-requisitos: Docker e Docker Compose instalados.
+## Rodar com Docker (Postgres externo)
 
-```bash
-docker compose build
-docker compose up -d
-```
+O `docker-compose.yml` **não** sobe um Postgres — o banco continua sendo o da
+sua máquina host. O container o alcança via `host.docker.internal`
+(configurado com `extra_hosts`).
 
-O site sobe em [http://localhost:3000](http://localhost:3000).
-
-Para parar:
-
-```bash
-docker compose down
-```
-
-Para ver os logs:
-
-```bash
-docker compose logs -f
-```
-
-O `Dockerfile` usa build multi-stage e o modo `output: 'standalone'` do Next.js, gerando uma
-imagem final enxuta (só o necessário para rodar em produção, sem o código-fonte completo).
-
-## Deploy na Vercel (passo a passo)
-
-A Vercel não usa o `docker-compose.yml` — ela faz o build nativo do Next.js na própria
-infraestrutura. O Docker aqui serve para você rodar/testar localmente ou hospedar em outro
-ambiente (VPS, EC2 etc.) caso queira no futuro.
-
-1. **Suba o projeto para o GitHub:**
-
-   ```bash
-   git init
-   git add .
-   git commit -m "portfolio inicial"
-   git branch -M main
-   git remote add origin https://github.com/SEU_USUARIO/portfolio.git
-   git push -u origin main
-   ```
-
-2. **Crie uma conta na Vercel:** acesse [vercel.com](https://vercel.com) → "Sign Up" →
-   "Continue with GitHub" (autoriza acesso aos seus repositórios).
-
-3. **Importe o projeto:** no dashboard, clique em **"Add New" → "Project"** e selecione o
-   repositório `portfolio` da lista.
-
-4. **Deploy:** a Vercel detecta automaticamente que é um projeto Next.js — não precisa mexer em
-   nada, só clicar em **"Deploy"**.
-
-5. **Pronto:** em ~1-2 minutos você recebe uma URL do tipo
-   `portfolio-seu-usuario.vercel.app`.
-
-6. **Deploys automáticos:** a cada `git push` na branch `main`, a Vercel refaz o deploy sozinha.
-   Pull requests geram URLs de preview automaticamente.
-
-7. **Domínio próprio (opcional):** em Project Settings → Domains, você pode conectar um domínio
-   próprio (ex: `luisdias.dev`).
-
-## Estrutura do projeto
-
-O projeto separa claramente **frontend** (páginas e componentes visuais) de
-**backend** (rotas de API e lógica de servidor), ambos dentro do mesmo projeto
-Next.js — é assim que o Next.js organiza full stack:
-
-```
-├── app/
-│   ├── layout.tsx           # Layout raiz, fontes e metadata SEO      [frontend]
-│   ├── page.tsx             # Página principal (monta as seções)     [frontend]
-│   ├── globals.css          # Estilos globais e grid de fundo        [frontend]
-│   └── api/
-│       └── contact/
-│           └── route.ts     # Endpoint POST /api/contact             [backend]
-├── components/                                                       [frontend]
-│   ├── Nav.tsx               # Navegação fixa
-│   ├── Hero.tsx              # Seção inicial com status e destaques
-│   ├── About.tsx             # Objetivo profissional e idiomas
-│   ├── Experience.tsx        # Timeline de experiência profissional
-│   ├── Skills.tsx            # Habilidades técnicas por categoria
-│   ├── Projects.tsx          # Cards de sistemas/projetos implantados
-│   ├── Education.tsx         # Formação acadêmica e cursos
-│   ├── Contact.tsx           # Formulário de contato (chama a API)
-│   └── Footer.tsx
-├── lib/                                                               [backend]
-│   ├── types.ts              # Tipos compartilhados (ContactPayload, etc.)
-│   └── validation.ts         # Validação de dados recebidos pela API
-├── .env.example              # Variáveis de ambiente do backend
-├── Dockerfile
-├── docker-compose.yml
-├── .dockerignore
-└── next.config.js            # output: 'standalone' para builds Docker enxutas
-```
-
-### Backend: formulário de contato
-
-O formulário em `components/Contact.tsx` envia um `POST` para `/api/contact`
-(`app/api/contact/route.ts`), que roda **no servidor** e faz:
-
-1. Validação dos campos (`lib/validation.ts`) — nome, e-mail e mensagem.
-2. Se a variável `RESEND_API_KEY` estiver configurada, envia o e-mail de
-   verdade via [Resend](https://resend.com).
-3. Caso contrário, apenas registra a mensagem nos logs do servidor (não quebra
-   o formulário, só não envia e-mail real — útil em desenvolvimento).
-
-Para ativar o envio real de e-mail:
+1. Garanta que o `.env` tem `DATABASE_URL_DOCKER` apontando para
+   `host.docker.internal` (o Compose injeta esse valor como `DATABASE_URL`
+   dentro do container).
+2. Suba:
 
 ```bash
-cp .env.example .env.local
-# edite .env.local e preencha RESEND_API_KEY com sua chave do Resend
+docker compose up --build
 ```
 
-Na Vercel, adicione as mesmas variáveis em **Project Settings → Environment
-Variables**.
+O container lê todas as variáveis do `.env` (`env_file`).
 
-## Personalização rápida
+---
 
-- **Baixar CV:** coloque o PDF do currículo em `public/curriculo-luis-sanches-dias.pdf` — o
-  botão "Baixar CV" no Hero já aponta para esse caminho.
-- **Cores:** ajuste a paleta em `tailwind.config.ts` (chaves `bg`, `surface`, `teal`, `amber`,
-  `ink`).
-- **Conteúdo:** os dados de experiência, projetos, skills e formação estão diretamente nos
-  respectivos componentes em `components/`, como arrays de objetos fáceis de editar.
+## Painel administrativo
+
+- Acesse `/admin/login` e entre com `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+- CRUD completo de: Perfil, Experiências, Projetos, Cursos, Formação,
+  Habilidades, Idiomas e Galeria.
+- Upload de imagens (Projetos e Galeria) via Vercel Blob — requer
+  `BLOB_READ_WRITE_TOKEN` configurado.
+- Ordenação manual pelo campo **Ordem** em cada registro.
+
+Para trocar a senha do admin: altere `ADMIN_PASSWORD` no `.env` e rode
+`npm run db:seed` novamente (o admin é atualizado via upsert).
+
+---
+
+## Variáveis de ambiente
+
+| Variável                | Obrigatória | Descrição                                                               |
+| ----------------------- | ----------- | ----------------------------------------------------------------------- |
+| `DATABASE_URL`          | sim         | Conexão PostgreSQL. Dev: `localhost`. Prod: Neon com `sslmode=require`.  |
+| `DATABASE_URL_DOCKER`   | (Docker)    | Igual à anterior, mas com host `host.docker.internal`.                  |
+| `NEXTAUTH_SECRET`       | sim         | Segredo do NextAuth (`openssl rand -base64 32`).                        |
+| `NEXTAUTH_URL`          | sim         | `http://localhost:3000` em dev; URL da Vercel em produção.              |
+| `BLOB_READ_WRITE_TOKEN` | upload      | Token do Vercel Blob (upload de imagens).                              |
+| `ADMIN_EMAIL`           | seed        | E-mail do admin criado pelo seed.                                       |
+| `ADMIN_PASSWORD`        | seed        | Senha do admin criado pelo seed.                                        |
+| `RESEND_API_KEY`        | não         | Envio real de e-mail do formulário de contato.                          |
+| `CONTACT_EMAIL_TO`      | não         | Destino das mensagens do formulário.                                    |
+
+---
+
+## Produção (Neon + Vercel)
+
+### 1. Banco no Neon (Vercel Postgres)
+
+1. Crie um projeto no [Neon](https://neon.tech) (ou Vercel Postgres).
+2. Copie a connection string (inclui `?sslmode=require`).
+
+### 2. Vercel Blob
+
+1. No painel da Vercel: **Storage → Blob → Create**.
+2. Gere um token de leitura/escrita → use em `BLOB_READ_WRITE_TOKEN`.
+
+### 3. Variáveis na Vercel
+
+Em **Settings → Environment Variables**, adicione:
+
+- `DATABASE_URL` = string do Neon (`...?sslmode=require`)
+- `NEXTAUTH_SECRET` = segredo gerado
+- `NEXTAUTH_URL` = `https://SEU-APP.vercel.app`
+- `BLOB_READ_WRITE_TOKEN` = token do Blob
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+- (opcional) `RESEND_API_KEY`, `CONTACT_EMAIL_TO`
+
+### 4. Migrations e seed em produção
+
+Com o `DATABASE_URL` de produção no ambiente local (ou via CI):
+
+```bash
+npx prisma migrate deploy   # aplica as migrations no Neon
+npm run db:seed             # popula o conteúdo (rodar uma vez)
+```
+
+O build da Vercel roda `prisma generate` automaticamente (script `build`).
+
+---
+
+## Notas técnicas
+
+- O site público é `dynamic` (SSR a cada requisição) para refletir edições do admin.
+- Rotas de API: `GET` é público (o site lê daqui); `POST/PUT/PATCH/DELETE` exigem
+  sessão admin (verificada nas rotas) e o middleware protege as páginas `/admin`.
+- Validação de entrada com **zod** em todas as rotas de escrita.
+- O contato (`/api/contact`) continua funcionando: envia via Resend se
+  `RESEND_API_KEY` estiver configurada; caso contrário, apenas registra nos logs.

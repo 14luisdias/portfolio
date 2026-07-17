@@ -3,16 +3,20 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone, Linkedin, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import type { Profile } from '@prisma/client';
 import type { ContactResponse } from '@/lib/types';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
-export default function Contact() {
+export default function Contact({ profile }: { profile: Profile }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const phoneHref = profile.phone ? `tel:+55${profile.phone.replace(/\D/g, '')}` : undefined;
+  const linkedinLabel = profile.linkedinUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +57,7 @@ export default function Contact() {
         className="grid md:grid-cols-2 gap-12"
       >
         <div>
-          <span className="font-mono text-xs text-teal uppercase tracking-widest">// contato</span>
+          <span className="font-mono text-xs text-teal uppercase tracking-widest">{'// contato'}</span>
           <h2 className="font-display text-3xl font-semibold mt-3 mb-6">Vamos conversar</h2>
           <p className="text-ink-muted leading-relaxed mb-8 max-w-md">
             Aberto a novas oportunidades em desenvolvimento full stack, administração de sistemas
@@ -61,29 +65,35 @@ export default function Contact() {
           </p>
 
           <div className="space-y-4">
-            <a
-              href="mailto:14luisdias@gmail.com"
-              className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
-            >
-              <Mail size={18} />
-              <span className="font-mono text-sm">14luisdias@gmail.com</span>
-            </a>
-            <a
-              href="tel:+5568992446118"
-              className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
-            >
-              <Phone size={18} />
-              <span className="font-mono text-sm">(68) 9 9244-6118</span>
-            </a>
-            <a
-              href="https://linkedin.com/in/luis-antonio-14370a1a0/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
-            >
-              <Linkedin size={18} />
-              <span className="font-mono text-sm">linkedin.com/in/luis-antonio-14370a1a0</span>
-            </a>
+            {profile.email && (
+              <a
+                href={`mailto:${profile.email}`}
+                className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
+              >
+                <Mail size={18} />
+                <span className="font-mono text-sm">{profile.email}</span>
+              </a>
+            )}
+            {phoneHref && (
+              <a
+                href={phoneHref}
+                className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
+              >
+                <Phone size={18} />
+                <span className="font-mono text-sm">{profile.phone}</span>
+              </a>
+            )}
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-ink-muted hover:text-teal transition-colors"
+              >
+                <Linkedin size={18} />
+                <span className="font-mono text-sm">{linkedinLabel}</span>
+              </a>
+            )}
           </div>
         </div>
 

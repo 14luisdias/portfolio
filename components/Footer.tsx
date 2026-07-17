@@ -1,9 +1,9 @@
-export default function Footer() {
+export default function Footer({ name }: { name: string }) {
   return (
     <footer className="border-t border-border">
       <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-xs text-ink-faint font-mono">
-          © {new Date().getFullYear()} Luis Antonio Sanches Dias
+          © {new Date().getFullYear()} {name}
         </p>
         <p className="text-xs text-ink-faint font-mono">Rio Branco — Acre, Brasil</p>
       </div>

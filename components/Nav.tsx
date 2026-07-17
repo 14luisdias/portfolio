@@ -3,16 +3,15 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
-const links = [
+const baseLinks = [
   { href: '#sobre', label: 'Sobre' },
   { href: '#experiencia', label: 'Experiência' },
   { href: '#habilidades', label: 'Habilidades' },
   { href: '#projetos', label: 'Projetos' },
   { href: '#formacao', label: 'Formação' },
-  { href: '#contato', label: 'Contato' },
 ];
 
-export default function Nav() {
+export default function Nav({ showGallery = false }: { showGallery?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -22,6 +21,12 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const links = [
+    ...baseLinks,
+    ...(showGallery ? [{ href: '#galeria', label: 'Galeria' }] : []),
+    { href: '#contato', label: 'Contato' },
+  ];
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
@@ -30,7 +35,7 @@ export default function Nav() {
     >
       <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#top" className="font-display font-semibold text-ink tracking-tight">
-          LD<span className="text-teal">.</span>
+          PLALURE<span className="text-teal">.</span>
         </a>
 
         <ul className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider">

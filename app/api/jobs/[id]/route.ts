@@ -1,0 +1,7 @@
+import { prisma } from '@/lib/prisma';
+import { makeItemRoute } from '@/lib/crud';
+import { jobUpdateSchema } from '@/lib/schemas';
+
+export const dynamic = 'force-dynamic';
+
+export const { GET, PUT, PATCH, DELETE } = makeItemRoute(prisma.job, jobUpdateSchema);

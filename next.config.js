@@ -3,7 +3,13 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   images: {
-    remotePatterns: [],
+    // Permite servir imagens hospedadas no Vercel Blob via next/image
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+      },
+    ],
   },
 };
 

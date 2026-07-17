@@ -1,0 +1,34 @@
+# Dependências
+/node_modules
+/.pnp
+.pnp.js
+
+# Build / Next.js
+/.next
+/out
+/build
+next-env.d.ts
+
+# Ambiente (segredos) — NUNCA commitar
+.env
+.env.local
+.env*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Sistema operacional
+.DS_Store
+*.pem
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma (bancos locais em arquivo, se houver)
+/prisma/*.db

@@ -1,15 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowDown, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
+import type { Profile } from '@prisma/client';
 
-const stats = [
-  { label: 'anos de atuação em TI', value: '13+' },
-  { label: 'sistemas implantados', value: '6' },
-  { label: 'órgãos públicos atendidos', value: '5' },
-];
+export default function Hero({ profile }: { profile: Profile }) {
+  const stats = [
+    { label: 'anos de atuação em TI', value: profile.statYears },
+    { label: 'sistemas implantados', value: profile.statSystems },
+    { label: 'órgãos públicos atendidos', value: profile.statAgencies },
+  ];
 
-export default function Hero() {
+  const cvUrl = profile.cvUrl || '/curriculo-luis-sanches-dias.pdf';
+
   return (
     <section
       id="top"
@@ -27,7 +31,7 @@ export default function Hero() {
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full rounded-full bg-teal animate-pulseDot" />
           </span>
-          STATUS: DISPONÍVEL PARA NOVOS PROJETOS
+          STATUS: {profile.status}
         </motion.div>
 
         <motion.h1
@@ -36,16 +40,16 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold leading-[1.1] tracking-tight max-w-3xl"
         >
-          Luis Antonio Sanches Dias
+          {profile.fullName}
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-4 font-mono text-teal text-base sm:text-lg"
+          className="mt-4 font-mono text-teal text-base sm:text-lg break-words"
         >
-          $ analista_de_sistemas --stack full-stack --foco infraestrutura,geoprocessamento
+          {profile.terminalLine}
         </motion.p>
 
         <motion.p
@@ -54,8 +58,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-6 max-w-2xl text-ink-muted text-base sm:text-lg leading-relaxed"
         >
-          Mantenho sistemas, servidores e plataformas de monitoramento ambiental em produção
-          para o Governo do Estado do Acre — do código à infraestrutura que o sustenta.
+          {profile.headline}
         </motion.p>
 
         <motion.div
@@ -71,7 +74,7 @@ export default function Hero() {
             Ver projetos
           </a>
           <a
-            href="/curriculo-luis-sanches-dias.pdf"
+            href={cvUrl}
             download
             className="inline-flex items-center gap-2 border border-border text-ink px-6 py-3 rounded-md hover:border-teal hover:text-teal transition-colors"
           >

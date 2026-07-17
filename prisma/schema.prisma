@@ -1,0 +1,138 @@
+// Schema do Prisma — portfólio Luis Dias
+// Fonte de verdade do banco: models abaixo geram o cliente tipado e as migrations.
+
+generator client {
+  provider      = "prisma-client-js"
+  // "native" para o ambiente local; "rhel-openssl-3.0.x" para o runtime serverless da Vercel
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Situação da experiência profissional
+enum JobStatus {
+  ONLINE
+  CONCLUIDO
+}
+
+// Usuário admin — autenticação por credenciais (NextAuth v5 + bcrypt)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String // hash bcrypt (nunca em texto puro)
+  name      String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Experiências profissionais (linha do tempo)
+model Job {
+  id          String    @id @default(cuid())
+  role        String
+  org         String
+  periodStart String // ex.: "01/2023" (mês/ano, preserva a exibição atual)
+  periodEnd   String? // null = "atual"
+  status      JobStatus @default(CONCLUIDO)
+  description String
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Projetos / sistemas implantados
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  year        Int
+  description String
+  stack       String[]
+  imageUrls   String[] // URLs públicas (Vercel Blob)
+  demoUrl     String?
+  repoUrl     String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Cursos complementares
+model Course {
+  id        String   @id @default(cuid())
+  name      String
+  org       String
+  year      Int
+  hours     String? // formato livre: "8h", "2h23", "3,5h" (nullable)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Formação acadêmica
+model Education {
+  id          String   @id @default(cuid())
+  degree      String
+  org         String
+  periodStart Int // ano de início
+  periodEnd   Int? // ano de fim (null = ano único / sem fim definido)
+  highlight   String? // destaque (ex.: honra ao mérito)
+  inProgress  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Habilidades (uma linha por item, agrupadas por categoria)
+model Skill {
+  id        String   @id @default(cuid())
+  category  String
+  item      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Idiomas
+model Language {
+  id        String   @id @default(cuid())
+  name      String
+  level     String
+  pct       Int
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Galeria de eventos/trabalho
+model GalleryItem {
+  id        String    @id @default(cuid())
+  title     String
+  imageUrl  String
+  caption   String?
+  eventDate DateTime?
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Perfil — dados do topo (tabela de linha única)
+model Profile {
+  id           String   @id @default(cuid())
+  fullName     String
+  headline     String
+  terminalLine String
+  summary      String
+  phone        String
+  email        String
+  linkedinUrl  String
+  cvUrl        String?
+  status       String
+  // Métricas exibidas no Hero (editáveis pelo admin)
+  statYears    String // ex.: "13+"
+  statSystems  String // ex.: "6"
+  statAgencies String // ex.: "5"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

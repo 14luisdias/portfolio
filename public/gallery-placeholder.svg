@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" role="img" aria-label="Imagem do evento (placeholder)">
+  <rect width="800" height="450" fill="#121821"/>
+  <rect x="0.5" y="0.5" width="799" height="449" fill="none" stroke="#232D3A"/>
+  <g fill="none" stroke="#2DD4BF" stroke-opacity="0.25">
+    <path d="M320 210 h160 M400 130 v160" stroke-width="2"/>
+    <circle cx="400" cy="210" r="70" stroke-width="2"/>
+  </g>
+  <text x="400" y="330" font-family="monospace" font-size="20" fill="#8593A6" text-anchor="middle">// imagem do evento</text>
+  <text x="400" y="360" font-family="monospace" font-size="13" fill="#556074" text-anchor="middle">envie uma foto pelo painel /admin</text>
+</svg>
