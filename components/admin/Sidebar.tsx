@@ -64,7 +64,7 @@ export default function Sidebar({
       {/* Sidebar fixa (desktop) */}
       <aside className="hidden md:flex md:flex-col fixed inset-y-0 left-0 w-60 bg-surface border-r border-border p-4">
         <Link href="/admin" className="flex items-center gap-2 px-3 py-2">
-          {/* Logo Plalugi (substitui o antigo texto PLALURE.) */}
+          {/* Logo Plalugi */}
           <img src="/plalugi-logo.png" alt="Plalugi" className="h-8 w-auto" />
           <span className="text-ink-faint font-mono text-xs">admin</span>
         </Link>
@@ -95,7 +95,7 @@ export default function Sidebar({
       <header className="md:hidden sticky top-0 z-40 bg-surface border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
           <Link href="/admin" className="flex items-center gap-2">
-            {/* Logo Plalugi (substitui o antigo texto PLALURE.) */}
+            {/* Logo Plalugi */}
             <img src="/plalugi-logo.png" alt="Plalugi" className="h-7 w-auto" />
             <span className="text-ink-faint font-mono text-xs">admin</span>
           </Link>

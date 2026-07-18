@@ -35,7 +35,7 @@ export default function Nav({ showGallery = false }: { showGallery?: boolean }) 
     >
       <nav className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
         <a href="#top" className="flex items-center" aria-label="Plalugi">
-          {/* Logo Plalugi (substitui o antigo texto PLALURE.) */}
+          {/* Logo Plalugi */}
           <img
             src="/plalugi-logo.png"
             alt="Plalugi"
