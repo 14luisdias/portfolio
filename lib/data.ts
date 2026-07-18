@@ -14,7 +14,11 @@ export function getJobs() {
 }
 
 export function getProjects() {
-  return prisma.project.findMany({ orderBy: byOrder });
+  // Projetos em ordem decrescente por ano (mais recente primeiro);
+  // desempate pelo campo `order`.
+  return prisma.project.findMany({
+    orderBy: [{ year: 'desc' as const }, { order: 'asc' as const }],
+  });
 }
 
 export function getCourses() {
