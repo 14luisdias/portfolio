@@ -33,9 +33,14 @@ export default function Nav({ showGallery = false }: { showGallery?: boolean }) 
         scrolled ? 'bg-bg/90 backdrop-blur-md border-b border-border' : 'bg-transparent'
       }`}
     >
-      <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#top" className="font-display font-semibold text-ink tracking-tight">
-          PLALURE<span className="text-teal">.</span>
+      <nav className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a href="#top" className="flex items-center" aria-label="Plalugi">
+          {/* Logo Plalugi (substitui o antigo texto PLALURE.) */}
+          <img
+            src="/plalugi-logo.png"
+            alt="Plalugi"
+            className="h-14 w-auto"
+          />
         </a>
 
         <ul className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider">

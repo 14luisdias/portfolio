@@ -33,3 +33,4 @@ pnpm-debug.log*
 
 # Prisma (bancos locais em arquivo, se houver)
 /prisma/*.db
+.env*
