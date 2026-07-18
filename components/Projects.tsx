@@ -33,7 +33,9 @@ export default function Projects({ projects }: { projects: Project[] }) {
               <img
                 src={p.imageUrls[0]}
                 alt={p.name}
-                className="h-40 w-full object-cover border-b border-border"
+                // object-contain mostra a imagem inteira (logos não são cortados/ampliados);
+                // fundo neutro + padding dão respiro ao redor do logo
+                className="h-40 w-full object-contain bg-surface-alt p-4 border-b border-border"
               />
             )}
             <div className="p-6 flex flex-col flex-1">
